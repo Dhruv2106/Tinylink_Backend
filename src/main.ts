@@ -5,7 +5,11 @@
 
 // Load environment variables first
 import * as dotenv from 'dotenv';
-dotenv.config();
+// dotenv.config();
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+}
+
 
 process.env.TZ = 'UTC';
 
