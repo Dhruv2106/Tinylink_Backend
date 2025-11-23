@@ -21,7 +21,7 @@ export class click_controller {
 
         try {
             // Verify link ownership
-            const linkResult = await DBUtil.dbPool.query(
+            const linkResult = await DBUtil.getPool().query(
                 'SELECT id, short_code, target_url, total_clicks FROM links WHERE id = $1 AND user_id = $2',
                 [linkId, userId]
             );
@@ -34,7 +34,7 @@ export class click_controller {
             const link = linkResult.rows[0];
 
             // Get click analytics
-            const clicksResult = await DBUtil.dbPool.query(
+            const clicksResult = await DBUtil.getPool().query(
                 `SELECT 
                         COUNT(*) as total_clicks,
                         COUNT(DISTINCT ip_address) as unique_visitors,
@@ -53,7 +53,7 @@ export class click_controller {
             const countryStats: { [key: string]: number } = {};
             const recentClicks: any[] = [];
 
-            const allClicks = await DBUtil.dbPool.query(
+            const allClicks = await DBUtil.getPool().query(
                 `SELECT browser, os, device, country, city, referer, clicked_at, ip_address
                      FROM clicks 
                      WHERE link_id = $1 

@@ -24,7 +24,7 @@ export class auth_controller {
 
         try {
             // Check if user already exists
-            const existingUser = await DBUtil.dbPool.query(
+            const existingUser = await DBUtil.getPool().query(
                 'SELECT id FROM users WHERE email = $1',
                 [email.toLowerCase()]
             );
@@ -39,7 +39,7 @@ export class auth_controller {
             const passwordHash = await bcrypt.hash(password, saltRounds);
 
             // Insert user
-            const result = await DBUtil.dbPool.query(
+            const result = await DBUtil.getPool().query(
                 'INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id, email, name, created_at',
                 [email.toLowerCase(), passwordHash, name || null]
             );
@@ -84,7 +84,7 @@ export class auth_controller {
     
             try {
                 // Find user
-                const result = await DBUtil.dbPool.query(
+                const result = await DBUtil.getPool().query(
                     'SELECT id, email, password_hash, name, created_at FROM users WHERE email = $1',
                     [email.toLowerCase()]
                 );

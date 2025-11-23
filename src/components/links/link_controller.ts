@@ -43,7 +43,7 @@ export class link_controller {
             const maxAttempts = 10;
 
             while (attempts < maxAttempts) {
-                const existing = await DBUtil.dbPool.query(
+                const existing = await DBUtil.getPool().query(
                     'SELECT id FROM links WHERE short_code = $1',
                     [shortCode]
                 );
@@ -62,7 +62,7 @@ export class link_controller {
             }
 
             // Insert link
-            const result = await DBUtil.dbPool.query(
+            const result = await DBUtil.getPool().query(
                 'INSERT INTO links (user_id, short_code, target_url) VALUES ($1, $2, $3) RETURNING *',
                 [userId, shortCode, targetUrl]
             );
@@ -90,12 +90,12 @@ export class link_controller {
         const userId = req.userId;
 
         try {
-            const result = await DBUtil.dbPool.query(
+            const result = await DBUtil.getPool().query(
                 'SELECT id, short_code, target_url, total_clicks, last_clicked_at, created_at, updated_at FROM links WHERE user_id = $1 ORDER BY created_at DESC',
                 [userId]
             );
 
-            const links = result.rows.map(link => ({
+            const links = result.rows.map((link: any) => ({
                 id: link.id,
                 shortCode: link.short_code,
                 targetUrl: link.target_url,
@@ -123,7 +123,7 @@ export class link_controller {
         }
 
         try {
-            const result = await DBUtil.dbPool.query(
+            const result = await DBUtil.getPool().query(
                 `SELECT id, short_code, target_url, total_clicks, last_clicked_at, created_at, updated_at 
                      FROM links 
                      WHERE id = $1 AND user_id = $2`,
@@ -165,7 +165,7 @@ export class link_controller {
         }
 
         try {
-            const result = await DBUtil.dbPool.query(
+            const result = await DBUtil.getPool().query(
                 'DELETE FROM links WHERE id = $1 AND user_id = $2 RETURNING id',
                 [linkId, userId]
             );
@@ -220,7 +220,7 @@ export class link_controller {
 
         try {
             // Find the link
-            const linkResult = await DBUtil.dbPool.query(
+            const linkResult = await DBUtil.getPool().query(
                 'SELECT id, target_url, total_clicks FROM links WHERE short_code = $1',
                 [shortCode]
             );
@@ -242,22 +242,22 @@ export class link_controller {
             const { browser, os, device } = link_controller.parseUserAgent(userAgent);
 
             // Insert click record
-            DBUtil.dbPool.query(
+            DBUtil.getPool().query(
                 `INSERT INTO clicks (link_id, ip_address, user_agent, browser, os, device, referer) 
              VALUES ($1, $2, $3, $4, $5, $6, $7)`,
                 [link.id, ipAddress, userAgent, browser, os, device, referer]
-            ).catch(error => {
+            ).catch((error: any) => {
                 console.error('Failed to track click:', error.message);
             });
 
             // Update link stats
-            DBUtil.dbPool.query(
+            DBUtil.getPool().query(
                 `UPDATE links 
              SET total_clicks = total_clicks + 1, 
                  last_clicked_at = NOW() 
              WHERE id = $1`,
                 [link.id]
-            ).catch(error => {
+            ).catch((error: any) => {
                 console.error('Failed to update link stats:', error.message);
             });
 

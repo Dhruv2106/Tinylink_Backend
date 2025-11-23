@@ -65,7 +65,7 @@ export class DDLUtil {
     public async generateTable(tableClass: IDBTable): Promise<boolean> {
         let client: PoolClient | null = null;
         try {
-            client = await DBUtil.dbPool.connect();
+            client = await DBUtil.getPool().connect();
         } catch (error: any) {
             console.log("Could not connect to database for generateTable");
             console.log(`Error: ${error.message}`);
@@ -95,7 +95,7 @@ export class DDLUtil {
     public async addColumns(tableClass: IDBTable): Promise<boolean> {
         let client: PoolClient | null = null;
         try {
-            client = await DBUtil.dbPool.connect();
+            client = await DBUtil.getPool().connect();
         } catch (error: any) {
             console.log("Could not connect to database for addColumns");
             process.exit(1);
@@ -193,7 +193,7 @@ export class DDLUtil {
     ): Promise<boolean> {
         let client: PoolClient | null = null;
         try {
-            client = await DBUtil.dbPool.connect();
+            client = await DBUtil.getPool().connect();
         } catch (error: any) {
             console.log("Could not connect to database for generateConstraints");
             process.exit(1);
@@ -318,7 +318,7 @@ export class DDLUtil {
     public async insertDefaultsIntoTable(tableClass: IDBTable): Promise<boolean> {
         let client: PoolClient | null = null;
         try {
-            client = await DBUtil.dbPool.connect();
+            client = await DBUtil.getPool().connect();
         } catch (error: any) {
             console.log("Could not connect to database for insertDefaultsIntoTable");
             return false;
@@ -350,7 +350,7 @@ export class DDLUtil {
     public async dropTable(tableName: string): Promise<boolean> {
         let client: PoolClient | null = null;
         try {
-            client = await DBUtil.dbPool.connect();
+            client = await DBUtil.getPool().connect();
             const query = `DROP TABLE IF EXISTS ${tableName} CASCADE`;
             console.log(`Dropping table: ${query}`);
             await client.query(query);
